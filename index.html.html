@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kazim Abbas — Networking &amp; Security</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F5F6F3;
+    --paper-alt: #ECEEEA;
+    --ink: #171D23;
+    --ink-soft: #52616C;
+    --ink-faint: #8B979E;
+    --accent: #2F6F62;
+    --accent-soft: #E4EEEA;
+    --line: #D7DBD6;
+    --card-bg: #FFFFFF;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #12171A;
+      --paper-alt: #171D21;
+      --ink: #ECEFEC;
+      --ink-soft: #A7B2AC;
+      --ink-faint: #6E7A75;
+      --accent: #6BC2AC;
+      --accent-soft: #1B2C28;
+      --line: #2A3134;
+      --card-bg: #171D21;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #12171A;
+    --paper-alt: #171D21;
+    --ink: #ECEFEC;
+    --ink-soft: #A7B2AC;
+    --ink-faint: #6E7A75;
+    --accent: #6BC2AC;
+    --accent-soft: #1B2C28;
+    --line: #2A3134;
+    --card-bg: #171D21;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(72px + env(safe-area-inset-top, 0px));
+  }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  a { color: var(--accent); text-decoration-color: var(--line); text-underline-offset: 3px; }
+  a:hover { text-decoration-color: currentColor; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- Nav ---------- */
+  nav {
+    position: sticky; top: 0; z-index: 20;
+    padding-top: env(safe-area-inset-top, 0px);
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner {
+    max-width: 760px; margin: 0 auto; padding: 14px 24px;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+  }
+  .nav-name { font-weight: 600; font-size: 0.98rem; letter-spacing: 0.01em; }
+  .nav-links { display: flex; gap: 18px; font-size: 0.88rem; overflow-x: auto; }
+  .nav-links a { color: var(--ink-soft); white-space: nowrap; }
+  .nav-links a:hover { color: var(--ink); }
+
+  /* ---------- Hero ---------- */
+  header.hero { padding: 56px 0 40px; }
+  .hero h1 {
+    font-size: clamp(2.1rem, 5vw, 2.8rem);
+    line-height: 1.12;
+    margin: 0 0 10px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .hero .role {
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    max-width: 46ch;
+  }
+  .trace {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 4px;
+    padding: 12px 14px;
+    background: var(--paper-alt);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    margin: 0 0 28px;
+  }
+  .trace .hop { color: var(--ink); }
+  .trace .num { color: var(--ink-faint); }
+  .trace .sep { color: var(--ink-faint); }
+  .trace .dest { color: var(--accent); font-weight: 500; }
+
+  .hero-links { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 16px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .btn:hover { border-color: var(--accent); }
+  .btn.primary:hover { opacity: 0.9; }
+
+  /* ---------- Spine / sections ---------- */
+  main { position: relative; }
+  .spine {
+    position: absolute;
+    left: 24px;
+    top: 6px; bottom: 6px;
+    width: 1px;
+    background: var(--line);
+  }
+  section {
+    padding: 40px 0 40px 40px;
+    position: relative;
+    border-bottom: 1px solid var(--line);
+  }
+  section:last-of-type { border-bottom: none; }
+  section::before {
+    content: "";
+    position: absolute;
+    left: 20px; top: 46px;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--accent);
+  }
+  .eyebrow { display: none; }
+  .head-row { display: flex; align-items: baseline; gap: 12px; margin: 0 0 16px; }
+  .head-row h2 { margin: 0; }
+  .sec-idx {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    flex-shrink: 0;
+  }
+  h2 {
+    font-size: 1.35rem;
+    margin: 0 0 16px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+  section > p.lead {
+    color: var(--ink-soft);
+    max-width: 62ch;
+    margin: 0;
+  }
+
+  /* ---------- Projects ---------- */
+  .project { margin-bottom: 28px; }
+  .project:last-child { margin-bottom: 0; }
+  .project-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 12px; flex-wrap: wrap; margin-bottom: 6px;
+  }
+  .project h3 { font-size: 1.05rem; margin: 0; font-weight: 600; }
+  .project time { font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; color: var(--ink-faint); white-space: nowrap; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; }
+  .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    padding: 3px 8px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 4px;
+  }
+  .project ul { margin: 0; padding-left: 18px; color: var(--ink-soft); }
+  .project li { margin-bottom: 4px; }
+  .project li::marker { color: var(--ink-faint); }
+
+  .topo { width: 100%; height: auto; margin: 4px 0 16px; }
+  .topo-node { fill: var(--card-bg); stroke: var(--ink-soft); stroke-width: 1.5; }
+  .topo-node.access { stroke: var(--ink-faint); }
+  .topo-node-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    fill: var(--ink);
+  }
+  .topo-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    fill: var(--ink-faint);
+  }
+  .topo-label.accent { fill: var(--accent); }
+
+  /* ---------- Experience ---------- */
+  .role-block { margin-bottom: 26px; }
+  .role-block:last-child { margin-bottom: 0; }
+  .role-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 2px; }
+  .role-head h3 { margin: 0; font-size: 1.05rem; font-weight: 600; }
+  .role-head time { font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; color: var(--ink-faint); white-space: nowrap; }
+  .role-org { color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 8px; }
+  .role-block ul { margin: 0; padding-left: 18px; color: var(--ink-soft); }
+  .role-block li { margin-bottom: 4px; }
+
+  /* ---------- Skills ---------- */
+  .skill-group { margin-bottom: 16px; }
+  .skill-group:last-child { margin-bottom: 0; }
+  .skill-label { font-weight: 600; font-size: 0.88rem; margin-bottom: 8px; }
+  .skill-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .chip {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    padding: 5px 10px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    color: var(--ink-soft);
+  }
+
+  /* ---------- Education / Certs ---------- */
+  .ed-item { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .ed-item:last-child { margin-bottom: 0; }
+  .ed-item div:first-child strong { display: block; font-size: 0.98rem; }
+  .ed-item div:first-child span { color: var(--ink-soft); font-size: 0.88rem; }
+  .ed-item time { font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; color: var(--ink-faint); white-space: nowrap; }
+
+  .cert-list { list-style: none; margin: 20px 0 0; padding: 14px 0 0; border-top: 1px solid var(--line); }
+  .cert-list li { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 6px 0; font-size: 0.92rem; color: var(--ink-soft); }
+  .cert-list li strong { color: var(--ink); font-weight: 500; }
+
+  /* ---------- Contact / footer ---------- */
+  .contact-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  footer {
+    padding: 28px 24px calc(28px + env(safe-area-inset-bottom, 0px));
+    text-align: center;
+    color: var(--ink-faint);
+    font-size: 0.8rem;
+  }
+
+  @media (max-width: 560px) {
+    .spine { left: 14px; }
+    section { padding-left: 28px; }
+    section::before { left: 10px; }
+    .nav-links { gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <span class="nav-name">Kazim Abbas</span>
+    <div class="nav-links">
+      <a href="#projects">Projects</a>
+      <a href="#experience">Experience</a>
+      <a href="#skills">Skills</a>
+      <a href="#education">Education</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <header class="hero">
+    <h1>Kazim Abbas</h1>
+    <p class="role">Networking &amp; Security student building toward cloud infrastructure and cybersecurity work. Currently looking for a Summer 2027 co-op placement.</p>
+
+    <div class="trace">
+      <span class="num">1</span><span class="hop">networking</span><span class="sep">›</span>
+      <span class="num">2</span><span class="hop">systems&nbsp;administration</span><span class="sep">›</span>
+      <span class="num">3</span><span class="hop">cloud&nbsp;infrastructure</span><span class="sep">›</span>
+      <span class="num">4</span><span class="hop">security</span><span class="sep">›</span>
+      <span class="dest">co-op ready</span>
+    </div>
+
+    <div class="hero-links">
+      <a class="btn primary" href="mailto:kaz.abbas05@gmail.com">Email me</a>
+      <a class="btn" href="https://linkedin.com/in/kazim-abbas-895386304/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="btn" href="#" target="_blank" rel="noopener">GitHub</a>
+      <!-- TODO: replace the GitHub href with your actual profile URL -->
+    </div>
+  </header>
+
+  <main>
+    <div class="spine"></div>
+
+    <section id="about">
+      <div class="head-row"><span class="sec-idx">01</span><h2>Summary</h2></div>
+      <p class="lead">Third-year Bachelor of Information Technology (Networking and Security) student at Ontario Tech University. Hands-on experience with Microsoft Azure, AWS, Active Directory, Windows Server, and enterprise routing, gained through coursework projects and volunteer systems administration. Interested in cloud security, infrastructure, and enterprise IT — comfortable documenting and testing changes to production-adjacent systems, not just building them.</p>
+    </section>
+
+    <section id="projects">
+      <div class="head-row"><span class="sec-idx">02</span><h2>Selected work</h2></div>
+
+      <div class="project">
+        <div class="project-head">
+          <h3>Azure Sentinel SOC Lab — Brute Force Detection</h3>
+          <time>Sep 2026</time>
+        </div>
+        <div class="tags">
+          <span class="tag">Microsoft Sentinel</span><span class="tag">KQL</span><span class="tag">Azure Monitor Agent</span><span class="tag">MITRE ATT&amp;CK</span>
+        </div>
+        <ul>
+          <li>Built an isolated Azure VM and connected its Windows security event logs into a Log Analytics workspace via a custom Data Collection Rule.</li>
+          <li>Wrote a KQL detection rule that flags 6+ failed RDP logons to the same host within a 5-minute window, then converted it into a live Sentinel Analytics Rule that raises real incidents automatically.</li>
+          <li>Simulated a brute-force RDP attempt against the lab VM, confirmed the rule fired correctly, and produced a full incident report mapping the detection to MITRE ATT&amp;CK technique T1110.001.</li>
+        </ul>
+        <p style="margin-top:10px;"><a href="https://claude.ai/artifact/GqYqpd4icUGcqsEqb1S2iy" target="_blank" rel="noopener">Read the full incident report →</a></p>
+      </div>
+
+      <div class="project">
+        <div class="project-head">
+          <h3>Advanced Enterprise Network Design Project</h3>
+          <time>Dec 2025</time>
+        </div>
+
+        <svg class="topo" viewBox="0 0 640 226" role="img" aria-labelledby="topo-title">
+          <title id="topo-title">Diagram of the four-tier network: edge router peering with an ISP over eBGP, dual core routers running an OSPFv3 backbone, distribution routers running EIGRP, and access switches below them.</title>
+          <g fill="none" stroke="var(--line)" stroke-width="1.5">
+            <line x1="320" y1="4"   x2="320" y2="26"  />
+            <line x1="320" y1="42"  x2="205" y2="70"  />
+            <line x1="320" y1="42"  x2="435" y2="70"  />
+            <line x1="205" y1="86"  x2="435" y2="86"  />
+            <line x1="205" y1="102" x2="150" y2="130" />
+            <line x1="205" y1="102" x2="330" y2="130" />
+            <line x1="435" y1="102" x2="330" y2="130" />
+            <line x1="435" y1="102" x2="500" y2="130" />
+            <line x1="150" y1="146" x2="120" y2="176" />
+            <line x1="150" y1="146" x2="320" y2="176" />
+            <line x1="330" y1="146" x2="320" y2="176" />
+            <line x1="500" y1="146" x2="520" y2="176" />
+          </g>
+          <text x="322" y="16" text-anchor="middle" class="topo-label accent">eBGP</text>
+          <text x="320" y="60" text-anchor="middle" class="topo-label">ISP uplink</text>
+          <text x="320" y="80" text-anchor="middle" class="topo-label accent">OSPFv3 backbone</text>
+          <text x="320" y="122" text-anchor="middle" class="topo-label accent">EIGRP named mode</text>
+
+          <rect x="280" y="8"  width="80"  height="30" rx="4" class="topo-node" />
+          <text x="320" y="27" text-anchor="middle" class="topo-node-label">Edge</text>
+
+          <rect x="155" y="70" width="100" height="30" rx="4" class="topo-node" />
+          <text x="205" y="89" text-anchor="middle" class="topo-node-label">Core 1</text>
+          <rect x="385" y="70" width="100" height="30" rx="4" class="topo-node" />
+          <text x="435" y="89" text-anchor="middle" class="topo-node-label">Core 2</text>
+
+          <rect x="102" y="130" width="96" height="30" rx="4" class="topo-node" />
+          <text x="150" y="149" text-anchor="middle" class="topo-node-label">Dist 1</text>
+          <rect x="282" y="130" width="96" height="30" rx="4" class="topo-node" />
+          <text x="330" y="149" text-anchor="middle" class="topo-node-label">Dist 2</text>
+          <rect x="452" y="130" width="96" height="30" rx="4" class="topo-node" />
+          <text x="500" y="149" text-anchor="middle" class="topo-node-label">Dist 3</text>
+
+          <rect x="80"  y="176" width="80" height="30" rx="4" class="topo-node access" />
+          <text x="120" y="195" text-anchor="middle" class="topo-node-label">Access</text>
+          <rect x="280" y="176" width="80" height="30" rx="4" class="topo-node access" />
+          <text x="320" y="195" text-anchor="middle" class="topo-node-label">Access</text>
+          <rect x="480" y="176" width="80" height="30" rx="4" class="topo-node access" />
+          <text x="520" y="195" text-anchor="middle" class="topo-node-label">Access</text>
+        </svg>
+        <div class="tags">
+          <span class="tag">Cisco IOS</span><span class="tag">OSPFv3</span><span class="tag">EIGRP Named Mode</span><span class="tag">MP-BGP</span>
+        </div>
+        <ul>
+          <li>Designed a multi-tier enterprise network spanning core, distribution, access, and edge layers.</li>
+          <li>Deployed and tuned OSPFv3, EIGRP Named Mode, and MP-BGP, including route redistribution and NSSA area configuration.</li>
+          <li>Validated end-to-end reachability and documented the addressing scheme and routing policy for handoff.</li>
+        </ul>
+      </div>
+
+      <div class="project">
+        <div class="project-head">
+          <h3>Azure Function Deployment &amp; Cloud Security</h3>
+          <time>Oct 2025</time>
+        </div>
+        <div class="tags">
+          <span class="tag">Azure Functions</span><span class="tag">PowerShell</span><span class="tag">Azure CLI</span><span class="tag">Entra ID</span>
+        </div>
+        <ul>
+          <li>Deployed serverless applications in Azure Functions, structuring resource groups for clean separation between environments.</li>
+          <li>Administered identity and access management through Azure Active Directory (Entra ID), enforcing least-privilege role assignments.</li>
+          <li>Hardened storage configuration and monitored application logs in Azure Monitor to trace and resolve runtime errors.</li>
+        </ul>
+      </div>
+
+      <div class="project">
+        <div class="project-head">
+          <h3>Server and Domain Configuration</h3>
+          <time>Oct 2024</time>
+        </div>
+        <div class="tags">
+          <span class="tag">Windows Server</span><span class="tag">Active Directory</span><span class="tag">Cisco</span>
+        </div>
+        <ul>
+          <li>Built a Windows Server domain with Active Directory, Group Policy, and logical access controls.</li>
+          <li>Diagnosed authentication failures by analyzing system logs and event data to isolate misconfigurations.</li>
+          <li>Applied user rights management and secure network segmentation across the lab environment.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="experience">
+      <div class="head-row"><span class="sec-idx">03</span><h2>Experience</h2></div>
+
+      <div class="role-block">
+        <div class="role-head">
+          <h3>Server Room Technician — Durham College</h3>
+          <time>Feb 2025 – Aug 2025</time>
+        </div>
+        <p class="role-org">Volunteer · Oshawa, Ontario</p>
+        <ul>
+          <li>Maintained a shared virtualization environment serving 3+ classrooms, enabling reliable remote lab access for over 100 students per term.</li>
+          <li>Configured and managed DHCP scopes and supported DNS configuration within a student lab network.</li>
+          <li>Authored deployment documentation to standardize and streamline repeat configurations for future terms.</li>
+        </ul>
+      </div>
+
+      <div class="role-block">
+        <div class="role-head">
+          <h3>Technical Department Assistant — Council of Islamic Guidance, Sunday School</h3>
+          <time>Sep 2022 – Jun 2023</time>
+        </div>
+        <p class="role-org">Volunteer · Pickering, Ontario</p>
+        <ul>
+          <li>Configured routers, access points, and local networks to improve connectivity and reliability.</li>
+          <li>Provisioned secure Wi-Fi and administrative accounts supporting over 150 students.</li>
+          <li>Supported surveillance and access control systems, gaining exposure to physical and logical security.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="skills">
+      <div class="head-row"><span class="sec-idx">04</span><h2>Technical skills</h2></div>
+
+      <div class="skill-group">
+        <div class="skill-label">Cloud</div>
+        <div class="skill-chips">
+          <span class="chip">Microsoft Azure</span><span class="chip">Azure Functions</span><span class="chip">Entra ID</span>
+          <span class="chip">Azure Monitor</span><span class="chip">AWS EC2</span><span class="chip">AWS S3</span><span class="chip">IAM</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-label">Security</div>
+        <div class="skill-chips">
+          <span class="chip">Identity &amp; access mgmt</span><span class="chip">Least privilege</span><span class="chip">Log analysis</span>
+          <span class="chip">Risk assessment</span><span class="chip">Vulnerability analysis</span><span class="chip">Incident response (foundations)</span>
+          <span class="chip">Microsoft Sentinel</span><span class="chip">KQL</span><span class="chip">MITRE ATT&amp;CK</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-label">Networking</div>
+        <div class="skill-chips">
+          <span class="chip">VLANs</span><span class="chip">Subnetting</span><span class="chip">TCP/IP</span><span class="chip">OSPFv3</span>
+          <span class="chip">EIGRP</span><span class="chip">BGP</span><span class="chip">NAT</span><span class="chip">DHCP</span><span class="chip">DNS</span><span class="chip">VPN</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-label">Systems &amp; tools</div>
+        <div class="skill-chips">
+          <span class="chip">Windows Server</span><span class="chip">Active Directory</span><span class="chip">Group Policy</span>
+          <span class="chip">PowerShell</span><span class="chip">Linux</span><span class="chip">Git / GitHub</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <div class="skill-label">Languages</div>
+        <div class="skill-chips">
+          <span class="chip">Python</span><span class="chip">Java</span><span class="chip">SQL</span><span class="chip">JavaScript</span><span class="chip">HTML/CSS</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="education">
+      <div class="head-row"><span class="sec-idx">05</span><h2>Education &amp; certifications</h2></div>
+
+      <div class="ed-item">
+        <div>
+          <strong>Ontario Tech University</strong>
+          <span>Bachelor of Information Technology, Networking and Security</span>
+        </div>
+        <time>2025 – 2027</time>
+      </div>
+      <div class="ed-item">
+        <div>
+          <strong>Durham College</strong>
+          <span>Computer Systems Technician Diploma — bridge/pathway program</span>
+        </div>
+        <time>2023 – 2025</time>
+      </div>
+
+      <ul class="cert-list">
+        <li><span><strong>Microsoft Certified:</strong> Azure Fundamentals (AZ-900)</span></li>
+        <li><span><strong>Cisco Networking Academy:</strong> Switching, Routing and Wireless Essentials</span></li>
+      </ul>
+    </section>
+
+    <section id="contact">
+      <div class="head-row"><span class="sec-idx">06</span><h2>Get in touch</h2></div>
+      <p class="lead">Open to co-op and internship opportunities in cybersecurity, cloud, and IT infrastructure. The fastest way to reach me is email.</p>
+      <div class="contact-links">
+        <a class="btn primary" href="mailto:kaz.abbas05@gmail.com">kaz.abbas05@gmail.com</a>
+        <a class="btn" href="https://linkedin.com/in/kazim-abbas-895386304/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn" href="#" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>Kazim Abbas — Oshawa, Ontario</footer>
+
+</body>
+</html>
